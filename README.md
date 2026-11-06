@@ -31,8 +31,3 @@ Python 3, scikit-learn, XGBoost, SHAP, rasterio, pandas, numpy, matplotlib.
 Note: `build_v2.py` and the map scripts use the exact coordinates, which are not included;
 `train.py` and `evaluate.py` can be run on the generalised training file (features are complete).
 
-## Licence
-[TODO: choose a licence, e.g. CC BY 4.0 for data and MIT for code]
-
-## Citation
-[TODO: add the paper citation and DOI once published]
