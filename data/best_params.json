@@ -24,42 +24,42 @@
    "params": {
     "max_depth": null,
     "max_features": "sqrt",
-    "min_samples_leaf": 1,
+    "min_samples_leaf": 3,
     "n_estimators": 200
    },
-   "cv_auc": 0.8891,
-   "cv_auc_sd": 0.041
+   "cv_auc": 0.8735,
+   "cv_auc_sd": 0.0276
   },
   "XGBoost": {
    "params": {
-    "colsample_bytree": 0.7,
+    "colsample_bytree": 1.0,
     "learning_rate": 0.03,
-    "max_depth": 2,
-    "n_estimators": 300,
+    "max_depth": 5,
+    "n_estimators": 100,
     "subsample": 1.0
    },
-   "cv_auc": 0.8794,
-   "cv_auc_sd": 0.0451
+   "cv_auc": 0.8639,
+   "cv_auc_sd": 0.0266
   },
   "SVM": {
    "params": {
-    "C": 100,
-    "gamma": 0.05
+    "C": 1,
+    "gamma": 0.1
    },
-   "cv_auc": 0.8771,
-   "cv_auc_sd": 0.047
+   "cv_auc": 0.8567,
+   "cv_auc_sd": 0.027
   },
   "MLP": {
    "params": {
-    "alpha": 0.1,
+    "alpha": 0.01,
     "hidden_layer_sizes": [
      64,
      32
     ],
-    "learning_rate_init": 0.01
+    "learning_rate_init": 0.001
    },
-   "cv_auc": 0.8726,
-   "cv_auc_sd": 0.0415
+   "cv_auc": 0.8181,
+   "cv_auc_sd": 0.0362
   }
  }
 }

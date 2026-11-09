@@ -1,0 +1,33 @@
+group,class,model,probability
+Geology,Unit 1,RF,0.4966
+Geology,Unit 1,XGBoost,0.5048
+Geology,Unit 1,SVM,0.4999
+Geology,Unit 1,MLP,0.499
+Geology,Unit 2,RF,0.4632
+Geology,Unit 2,XGBoost,0.5048
+Geology,Unit 2,SVM,0.2525
+Geology,Unit 2,MLP,0.0251
+Geology,Unit 3,RF,0.5118
+Geology,Unit 3,XGBoost,0.5115
+Geology,Unit 3,SVM,0.5197
+Geology,Unit 3,MLP,0.5159
+Geology,Unit 4,RF,0.4913
+Geology,Unit 4,XGBoost,0.4983
+Geology,Unit 4,SVM,0.4941
+Geology,Unit 4,MLP,0.4842
+Land cover,Tree cover,RF,0.54
+Land cover,Tree cover,XGBoost,0.5072
+Land cover,Tree cover,SVM,0.6436
+Land cover,Tree cover,MLP,0.8381
+Land cover,Grassland,RF,0.5163
+Land cover,Grassland,XGBoost,0.5051
+Land cover,Grassland,SVM,0.5191
+Land cover,Grassland,MLP,0.4867
+Land cover,Bare / sparse,RF,0.4452
+Land cover,Bare / sparse,XGBoost,0.494
+Land cover,Bare / sparse,SVM,0.4993
+Land cover,Bare / sparse,MLP,0.5445
+Land cover,Other,RF,0.5044
+Land cover,Other,XGBoost,0.5156
+Land cover,Other,SVM,0.3818
+Land cover,Other,MLP,0.0288

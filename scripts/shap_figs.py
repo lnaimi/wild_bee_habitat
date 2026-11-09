@@ -5,7 +5,7 @@ Z=np.load('shap_values.npz',allow_pickle=True); FEAT=list(Z['feat']); X=pd.DataF
 S=pd.read_csv('bee_training_final.csv')
 names=['RF','XGBoost','SVM','MLP']; LBL={'RF':'Random forest','XGBoost':'XGBoost','SVM':'SVM','MLP':'Neural network (MLP)'}
 COL={'RF':'#2a78d6','XGBoost':'#eb6834','SVM':'#1baf7a','MLP':'#eda100'}
-lab={'slope_deg':'Slope','dist_roads_m':'Distance to roads','dist_faults_m':'Distance to faults','elevation_m':'Elevation','geol_2':'Geology unit 2','eastness':'Eastness','northness':'Northness','erodibility_k':'Soil erodibility (K)','plan_curvature':'Plan curvature','profile_curvature':'Profile curvature','dist_streams_m':'Distance to streams','lulc_grass':'Land cover: grassland','lulc_bare':'Land cover: bare','lulc_tree':'Land cover: tree','lulc_other':'Land cover: other','geol_1':'Geology unit 1','geol_3':'Geology unit 3','geol_4':'Geology unit 4'}
+lab={'slope_deg':'Slope','dist_roads_m':'Distance to roads','dist_faults_m':'Distance to faults','elevation_m':'Elevation','geol_2':'Geology unit 2','eastness':'Eastness','northness':'Northness','erodibility_k':'Soil erodibility (K)','plan_curvature':'Plan curvature','profile_curvature':'Profile curvature','dist_streams_m':'Distance to streams','lulc_grass':'Grassland share','lulc_bare':'Bare/sparse share','lulc_tree':'Tree cover share','lulc_other':'Other land cover share','geol_1':'Geology unit 1','geol_3':'Geology unit 3','geol_4':'Geology unit 4'}
 INK,INK2,GRID='#0b0b0b','#52514e','#e4e3df'
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':9,'axes.edgecolor':INK2,'axes.labelcolor':INK,'xtick.color':INK2,'ytick.color':INK2,'axes.spines.top':False,'axes.spines.right':False})
 M=pd.read_csv('shap_mean_abs.csv',index_col=0)
@@ -31,7 +31,7 @@ ax.set_xlabel('SHAP value (impact on predicted probability of presence)'); ax.gr
 cb=fig.colorbar(sc,ax=ax,fraction=.03,pad=.02,ticks=[0,1]); cb.ax.set_yticklabels(['Low','High']); cb.set_label('Feature value',fontsize=8); cb.outline.set_visible(False)
 ax.set_title('SHAP summary (beeswarm), random forest, n = 300',loc='left',fontsize=10.5,color=INK); fig.tight_layout(); fig.savefig('fig_shap_beeswarm_rf.png'); plt.close()
 # C: dependence plots RF
-pan=[('slope_deg','Slope (°)',1,'elevation_m','Elevation (m)'),('dist_roads_m','Distance to roads (km)',1000,'slope_deg','Slope (°)'),('eastness','Eastness (−1 west … +1 east)',1,'slope_deg','Slope (°)'),('elevation_m','Elevation (m)',1,'slope_deg','Slope (°)')]
+pan=[('slope_deg','Slope (°)',1,'elevation_m','Elevation (m)'),('dist_roads_m','Distance to roads (km)',1000,'slope_deg','Slope (°)'),('dist_faults_m','Distance to faults (km)',1000,'slope_deg','Slope (°)'),('elevation_m','Elevation (m)',1,'slope_deg','Slope (°)')]
 seq=LinearSegmentedColormap.from_list('s',['#cde2fb','#5598e7','#1c5cab','#0d366b'])
 fig,axs=plt.subplots(1,4,figsize=(13,3.4),dpi=250,sharey=True)
 for ax,(f,xl,sc_,cf,cl) in zip(axs,pan):
@@ -43,17 +43,17 @@ fig.suptitle('SHAP dependence plots, random forest (colour: interacting feature)
 # D: local explanations (RF): highest-prob test presence and lowest-prob test background
 import joblib; rf=joblib.load('RF.joblib'); p=rf.predict_proba(X.values)[:,1]; base=float(np.mean(p))
 te=S.split.values=='test'; ip=np.where(te&(S.label.values==1))[0]; ib=np.where(te&(S.label.values==0))[0]
-cases=[(ip[np.argmax(p[ip])],'Test presence'),(ib[np.argmin(p[ib])],'Test background point')]
+cases=[(ip[np.argmax(p[ip])],'Test presence'),(ib[np.argmin(p[ib])],'Test absence')]
 fig,axs=plt.subplots(1,2,figsize=(11,3.8),dpi=250)
 for ax,(i,t) in zip(axs,cases):
     sv=V[i]; o=np.argsort(-np.abs(sv))[:7][::-1]
     cols=['#e34948' if sv[j]>0 else '#2a78d6' for j in o]
     def fmt(f,v):
-        return f'{v:.0f}' if f.endswith('_m') else (f'{v:.1f}' if f=='slope_deg' else (f'{v:.2f}' if not f.startswith(('geol','lulc')) else ('yes' if v>0.5 else 'no')))
+        return f'{v:.0f}' if f.endswith('_m') else (f'{v:.1f}' if f=='slope_deg' else (f'{v:.2f}' if not f.startswith('geol') else ('yes' if v>0.5 else 'no')) if not f.startswith('lulc') else f'{v*100:.0f}%')
     ax.barh(range(len(o)),sv[o],color=cols,height=.6); ax.axvline(0,color=INK2,lw=.8)
     ax.set_yticks(range(len(o))); ax.set_yticklabels([f'{lab[FEAT[j]]} = {fmt(FEAT[j],X.iloc[i,j])}' for j in o],fontsize=8)
     ax.set_xlabel('SHAP value'); ax.grid(axis='x',color=GRID,lw=.5); ax.set_axisbelow(True)
-    ax.set_title(f'{t} (cell {int(S.cell.iloc[i])}): p = {p[i]:.2f}, base = {base:.2f}',loc='left',fontsize=9.5,color=INK)
+    ax.set_title(f'{t}: p = {p[i]:.2f} (base = {base:.2f})',loc='left',fontsize=9.5,color=INK)
 fig.tight_layout(); fig.savefig('fig_shap_local_rf.png'); plt.close()
 print('cases',[(int(S.cell.iloc[i]),round(p[i],3)) for i,_ in cases],'base',round(base,3))
 # numbers for text: slope SHAP sign change

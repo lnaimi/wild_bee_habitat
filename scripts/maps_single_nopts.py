@@ -2,7 +2,7 @@ import numpy as np, pandas as pd, rasterio, json, joblib
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from sklearn.metrics import roc_auc_score
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0
 S=pd.read_csv('bee_training_final.csv'); FEAT=json.load(open('best_params.json'))['features']; te=S[S.split=='test']; P1=S[S.label==1]
 LBL={'RF':'Random forest','XGBoost':'XGBoost','SVM':'Support vector machine (SVM)','MLP':'Neural network (MLP)'}
 CLS=['#2a78d6','#1baf7a','#eda100','#e05a2b','#9b1d4a']; names_cls=['Very low','Low','Moderate','High','Very high']

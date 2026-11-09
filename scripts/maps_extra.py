@@ -1,7 +1,7 @@
 import numpy as np, pandas as pd, rasterio
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm, LinearSegmentedColormap
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0
 S=pd.read_csv('bee_training_final.csv'); INK='#0b0b0b'
 ext=[XLL/1000,(XLL+NC*CS)/1000,YLL/1000,(YLL+NR*CS)/1000]
 plt.rcParams.update({'font.family':'DejaVu Sans','xtick.color':'#52514e','ytick.color':'#52514e'})

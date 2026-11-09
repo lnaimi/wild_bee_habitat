@@ -5,28 +5,33 @@ from rasterio.crs import CRS
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from sklearn.metrics import roc_curve, roc_auc_score
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0
 G=pd.read_pickle('grid_features.pkl'); S=pd.read_csv('bee_training_final.csv'); FEAT=json.load(open('best_params.json'))['features']
 names=['RF','XGBoost','SVM','MLP']; LBL={'RF':'Random forest','XGBoost':'XGBoost','SVM':'SVM','MLP':'Neural network (MLP)'}
 COL={'RF':'#2a78d6','XGBoost':'#eb6834','SVM':'#1baf7a','MLP':'#eda100'}
 M={n:joblib.load(f'{n}.joblib') for n in names}
-for n in names: G['p_'+n]=M[n].predict_proba(G[FEAT].values)[:,1]
-G['p_ensemble']=G[['p_'+n for n in names]].mean(axis=1)
+import time
+XA=G[FEAT].values.astype(np.float64); CH=200000
+for n in names:
+    t=time.time(); G['p_'+n]=np.concatenate([M[n].predict_proba(XA[i:i+CH])[:,1] for i in range(0,len(XA),CH)]).astype(np.float32); print(n,'mapped',round(time.time()-t),'s',flush=True)
+del XA
+G['p_ensemble']=G[['p_'+n for n in names]].mean(axis=1).astype(np.float32)
+G['p_trees']=G[['p_RF','p_XGBoost']].mean(axis=1).astype(np.float32)
 # rasters
 tf=from_origin(XLL,YLL+NR*CS,CS,CS); out={}
-for k in names+['ensemble']:
+for k in names+['ensemble','trees']:
     a=np.full(NR*NC,-9999,np.float32); a[G.id.values-1]=G['p_'+k].values; a=a.reshape(NR,NC); out[k]=a
     with rasterio.open(f'suitability_{k}.tif','w',driver='GTiff',height=NR,width=NC,count=1,dtype='float32',crs=CRS.from_epsg(32630),transform=tf,nodata=-9999,compress='deflate') as r: r.write(a,1)
-G[['id','x','y','lon','lat']+['p_'+n for n in names]+['p_ensemble']].round(4).to_csv('suitability_all_cells.csv',index=False)
+
 # classes
 bins=[0,.2,.4,.6,.8,1.0001]; cls=['Very low','Low','Moderate','High','Very high']
 rows=[]
 pres_cells=S[S.label==1].cell.values
-for k in names+['ensemble']:
+for k in names+['ensemble','trees']:
     c=pd.cut(G['p_'+k],bins,labels=cls,right=False); cnt=c.value_counts().reindex(cls)
     pc=pd.cut(G.set_index('id').loc[pres_cells,'p_'+k],bins,labels=cls,right=False).value_counts().reindex(cls)
-    for cl in cls: rows.append({'model':k,'class':cl,'cells':int(cnt[cl]),'area_km2':round(cnt[cl]*0.09,1),'area_pct':round(cnt[cl]/len(G)*100,1),'presences':int(pc[cl]),'presence_pct':round(pc[cl]/len(pres_cells)*100,1)})
-CT=pd.DataFrame(rows); CT.to_csv('suitability_classes.csv',index=False); print(CT[CT.model=='ensemble'].to_string(index=False))
+    for cl in cls: rows.append({'model':k,'class':cl,'cells':int(cnt[cl]),'area_km2':round(cnt[cl]*0.0009,1),'area_pct':round(cnt[cl]/len(G)*100,1),'presences':int(pc[cl]),'presence_pct':round(pc[cl]/len(pres_cells)*100,1)})
+CT=pd.DataFrame(rows); CT.to_csv('suitability_classes.csv',index=False); print(CT[CT.model.isin(['ensemble','trees'])].to_string(index=False))
 # ---- figure style
 INK,INK2,GRID='#0b0b0b','#52514e','#e4e3df'
 plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,'axes.edgecolor':INK2,'axes.labelcolor':INK,'xtick.color':INK2,'ytick.color':INK2,'axes.spines.top':False,'axes.spines.right':False})

@@ -3,7 +3,7 @@ from rasterio.transform import from_origin
 from rasterio.crs import CRS
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0; TOP=YLL+NR*CS
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0; TOP=YLL+NR*CS
 G=pd.read_pickle('grid_features.pkl')
 e=np.full(NR*NC,np.nan,np.float32); e[G.id.values-1]=np.sin(np.radians(G.aspect_deg.values)); e=e.reshape(NR,NC)
 # GeoTIFF

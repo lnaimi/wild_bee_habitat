@@ -2,7 +2,7 @@ import numpy as np, rasterio
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap, BoundaryNorm
 from matplotlib.patches import Patch
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0
 CLS=['#2a78d6','#1baf7a','#eda100','#e05a2b','#9b1d4a']
 cmap=ListedColormap(CLS); cmap.set_bad('#ffffff'); norm=BoundaryNorm([0,.2,.4,.6,.8,1.0001],5)
 ext=[XLL/1000,(XLL+NC*CS)/1000,YLL/1000,(YLL+NR*CS)/1000]; INK='#0b0b0b'

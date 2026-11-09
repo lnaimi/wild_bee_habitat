@@ -47,7 +47,7 @@ axs[0].set_ylabel('Mean predicted probability'); axs[1].legend(frameon=False,fon
 fig.tight_layout(); fig.savefig('fig_response_categorical.png'); plt.close()
 print(cat.pivot_table(index=['group','class'],columns='model',values='probability').round(2))
 # ---- maps with distinct class colours
-NR,NC,CS,XLL,YLL=246,415,300.0,266900.0,3535978.0
+NR,NC,CS,XLL,YLL=2460,4150,30.0,266900.0,3535978.0
 CLS=['#2a78d6','#1baf7a','#eda100','#e05a2b','#9b1d4a']; names_cls=['Very low','Low','Moderate','High','Very high']
 cmap=ListedColormap(CLS); cmap.set_bad('#ffffff'); norm=BoundaryNorm([0,.2,.4,.6,.8,1.0001],5)
 ext=[XLL/1000,(XLL+NC*CS)/1000,YLL/1000,(YLL+NR*CS)/1000]; P1=S[S.label==1]
